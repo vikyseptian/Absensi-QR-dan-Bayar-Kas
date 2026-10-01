@@ -31,13 +31,17 @@ if(localStorage.getItem("admin") !== "true"){
 
     <hr style="margin: 25px 0;">
 
-    <!-- FITUR 2: INPUT KAS CASH MANUAL -->
+    <!-- FITUR 2: INPUT KAS TUNAI (CASH) -->
     <h2>2. Input Kas Tunai (Cash)</h2>
     <input type="text" id="admin_kas_nama" placeholder="Nama Mahasiswa">
     <br><br>
     <input type="text" id="admin_kas_nim" placeholder="NIM Mahasiswa">
     <br><br>
     <input type="text" id="admin_kas_bulan" placeholder="Bulan (Contoh: 2026-10)">
+    <br><br>
+    <input type="number" id="admin_kas_nominal" placeholder="Nominal Kas (Contoh: 10000)" value="10000">
+    <br><br>
+    <input type="number" id="admin_kas_denda" placeholder="Nominal Denda (Opsional, Default: 0)" value="0">
     <br><br>
     <button onclick="adminInputCash()" style="background-color: #28a745; color: white; width: 100%;">Simpan Pembayaran Cash</button>
     <p id="msg_admin_kas"></p>
@@ -65,15 +69,18 @@ window.onload = function(){
     }
 }
 
-// Fungsi Input Kas Tunai oleh Admin
+// Fungsi Input Kas Tunai oleh Admin (Fleksibel Nominal)
 function adminInputCash() {
     let nama = document.getElementById("admin_kas_nama").value.trim();
     let nim = document.getElementById("admin_kas_nim").value.trim();
     let bulan = document.getElementById("admin_kas_bulan").value.trim();
+    let kas = parseInt(document.getElementById("admin_kas_nominal").value) || 0;
+    let denda = parseInt(document.getElementById("admin_kas_denda").value) || 0;
+    let total = kas + denda;
     let msg = document.getElementById("msg_admin_kas");
 
-    if (!nama || !nim || !bulan) {
-        alert("Nama, NIM, dan Bulan wajib diisi!");
+    if (!nama || !nim || !bulan || kas <= 0) {
+        alert("Nama, NIM, Bulan, dan Nominal Kas wajib diisi!");
         return;
     }
 
@@ -86,9 +93,9 @@ function adminInputCash() {
             nama: nama,
             nim: nim,
             bulan: bulan,
-            kas: 10000,
-            denda: 0,
-            total: 10000,
+            kas: kas,
+            denda: denda,
+            total: total,
             metode: "Cash"
         })
     })
@@ -98,6 +105,8 @@ function adminInputCash() {
         document.getElementById("admin_kas_nama").value = "";
         document.getElementById("admin_kas_nim").value = "";
         document.getElementById("admin_kas_bulan").value = "";
+        document.getElementById("admin_kas_nominal").value = "10000";
+        document.getElementById("admin_kas_denda").value = "0";
         msg.innerText = "✅ Berhasil disimpan!";
     })
     .catch(err => {
