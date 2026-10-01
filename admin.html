@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - Forkat</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<!-- Proteksi Login Admin -->
+<script>
+if(localStorage.getItem("admin") !== "true"){
+    window.location.href = "admin-login.html";
+}
+</script>
+
+<div class="container" style="max-width: 500px; margin: auto; text-align: center;">
+    <h1>Admin Panel</h1>
+    <button onclick="logoutAdmin()" style="background-color: #dc3545; color: white;">Logout</button>
+
+    <hr style="margin: 25px 0;">
+
+    <!-- FITUR 1: GENERATE QR CODE ABSENSI -->
+    <h2>1. Generate QR Absensi</h2>
+    <input type="text" id="pertemuan" placeholder="Contoh: Forkat Pertemuan 1">
+    <br><br>
+    <button onclick="buatQR()">Generate QR Code</button>
+    <br><br>
+    <div id="qrcode" style="display: flex; justify-content: center; margin-top: 10px;"></div>
+    <h3 id="timer" style="color: #d9534f;"></h3>
+
+    <hr style="margin: 25px 0;">
+
+    <!-- FITUR 2: INPUT KAS CASH MANUAL -->
+    <h2>2. Input Kas Tunai (Cash)</h2>
+    <input type="text" id="admin_kas_nama" placeholder="Nama Mahasiswa">
+    <br><br>
+    <input type="text" id="admin_kas_nim" placeholder="NIM Mahasiswa">
+    <br><br>
+    <input type="text" id="admin_kas_bulan" placeholder="Bulan (Contoh: 2026-10)">
+    <br><br>
+    <button onclick="adminInputCash()" style="background-color: #28a745; color: white; width: 100%;">Simpan Pembayaran Cash</button>
+    <p id="msg_admin_kas"></p>
+
+    <br>
+    <a href="index.html">← Kembali ke Halaman Utama</a>
+</div>
+
+<script src="script.js"></script>
+
+<script>
+// Menampilkan kembali QR yang masih aktif saat halaman di-refresh
+window.onload = function(){
+    let qrTersimpan = localStorage.getItem("qrAktif");
+    if(qrTersimpan){
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), qrTersimpan);
+
+        try{
+            let dataQR = JSON.parse(qrTersimpan);
+            document.getElementById("pertemuan").value = dataQR.pertemuan;
+        }catch{
+            document.getElementById("pertemuan").value = qrTersimpan;
+        }
+    }
+}
+
+// Fungsi Input Kas Tunai oleh Admin
+function adminInputCash() {
+    let nama = document.getElementById("admin_kas_nama").value.trim();
+    let nim = document.getElementById("admin_kas_nim").value.trim();
+    let bulan = document.getElementById("admin_kas_bulan").value.trim();
+    let msg = document.getElementById("msg_admin_kas");
+
+    if (!nama || !nim || !bulan) {
+        alert("Nama, NIM, dan Bulan wajib diisi!");
+        return;
+    }
+
+    msg.innerText = "⏳ Menyimpan data kas...";
+
+    fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            action: "submitKas",
+            nama: nama,
+            nim: nim,
+            bulan: bulan,
+            kas: 10000,
+            denda: 0,
+            total: 10000,
+            metode: "Cash"
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || "Kas Tunai Berhasil Disimpan!");
+        document.getElementById("admin_kas_nama").value = "";
+        document.getElementById("admin_kas_nim").value = "";
+        document.getElementById("admin_kas_bulan").value = "";
+        msg.innerText = "✅ Berhasil disimpan!";
+    })
+    .catch(err => {
+        console.error(err);
+        msg.innerText = "❌ Gagal menyimpan data.";
+    });
+}
+</script>
+
+</body>
+</html>

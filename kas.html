@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bayar Kas Kelas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Bayar Kas Kelas</h1>
+
+    <input type="text" id="kas_nama" placeholder="Masukkan Nama Lengkap">
+    <br><br>
+
+    <input type="text" id="kas_nim" placeholder="Masukkan NIM Lengkap">
+    <br><br>
+
+    <button onclick="cekTunggakanKas()">Cek Tunggakan Bulan</button>
+
+    <div id="area_tunggakan" style="margin-top: 20px; display: none; text-align: left;">
+        <h3>Daftar Tagihan:</h3>
+        <div id="list_bulan"></div>
+        <br>
+        <h4>Total Bayar: <span id="total_bayar_text" style="color: #007bff;">Rp0</span></h4>
+        <button onclick="submitBayarKas()" style="background-color: #28a745; color: white; width: 100%;">Konfirmasi Pembayaran</button>
+    </div>
+
+    <p id="msg_kas"></p>
+    <br>
+    <a href="index.html">← Kembali ke Utama</a>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
